@@ -1,0 +1,56 @@
+version: '3'
+services:
+      
+  post:
+    build:
+      context: .
+      dockerfile: ./apps/post/Dockerfile
+      target: development
+    command: npm run start:dev post
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./apps/post/.env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+
+  notification:
+    build:
+      context: .
+      dockerfile: ./apps/notification/Dockerfile
+      target: development
+    ports:
+      - '3333:3333'
+    command: npm run start:dev notification
+
+    env_file:
+      - ./apps/notification/.env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+
+
+
+  postgresDB:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=nest_api
+
+
+
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+   
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+   
+  
+
+
